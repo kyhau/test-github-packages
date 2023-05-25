@@ -1,0 +1,39 @@
+name: Pull app-helloworld-b
+
+on:
+  # push:
+  # paths:
+  # - .github/workflows/container-image-pull-selfhosted.yaml
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}/app-helloworld-b
+  VERSION: "0.0.1"
+
+jobs:
+  pull-image:
+    runs-on: [self-hosted]
+    permissions:
+      contents: read
+      packages: read
+
+    steps:
+      - name: Tmp fix ~/.docker/config.json
+        # Error saving credentials: error storing credentials - err: exit status 1, out: `not implemented`
+        run: |
+          rm ~/.docker/config.json
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Ensure repository name is lowercase
+        run: |
+          echo "IMAGE_NAME_LC=${IMAGE_NAME,,}" >> ${GITHUB_ENV}
+
+      - run: |
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LC }}:${{ env.VERSION }}
