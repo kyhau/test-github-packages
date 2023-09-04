@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Tmp fix ~/.docker/config.json
         # Error saving credentials: error storing credentials - err: exit status 1, out: `not implemented`
